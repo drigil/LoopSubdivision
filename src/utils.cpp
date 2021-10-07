@@ -15,6 +15,7 @@ void setupModelTransformation(int program)
 
     //Pass on the modelling matrix to the vertex shader
     glUseProgram(program);
+    
     GLuint vModel_uniform = glGetUniformLocation(program, "vModel");
     if(vModel_uniform == -1){
         fprintf(stderr, "Could not bind location: vModel\n");
@@ -143,7 +144,6 @@ GLuint createShader(const char* filename, GLenum type)
 const char * setGLSLVersion(){
     #if __APPLE__
     // GL 3.2 + GLSL 150
-        printf("%s\n", "MAC found");
         const char* glsl_version = "#version 150";
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

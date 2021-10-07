@@ -1,7 +1,6 @@
 #version 330 core
 in vec4 locationVector;
 
-
 vec3 eyepos;
 vec3 eye_normal;
 

@@ -2,11 +2,12 @@
 layout (location = 0)in vec3 vVertex;
 layout (location = 1)in vec3 vertex_norm;
 
-vec3 eyepos;
-vec3 eye_normal;
 uniform mat4 vModel;
 uniform mat4 vView;
 uniform mat4 vProjection;
+
+vec3 eyepos;
+vec3 eye_normal;
 
 vec3 lpos_world = vec3(25.0f, 50.0f, -70.0f);
 vec3 worldOrigin = vec3(0.0f, 0.0f, 0.0f);
@@ -30,7 +31,6 @@ vec3 viewVector;
 vec3 reflectedVector;
 
 out vec4 fragColor;
-
 
 void main(){
 
@@ -71,6 +71,4 @@ void main(){
 
 
 	fragColor = specLight + diffLight + ambientLight;
-
-
 }
