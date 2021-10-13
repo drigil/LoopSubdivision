@@ -8,6 +8,7 @@
 class Vertex;
 class Face;
 class HalfEdge;
+class MeshFace;
 
 // Define a Vector3f
 struct Vector3f {
@@ -149,9 +150,25 @@ struct HalfEdge {
 	}
 };
 
+
+class Mesh{
+	public:
+		std::vector<HalfEdge*> halfEdges;
+		std::vector<Vertex*> vertices;
+		std::vector<Face*> faces;
+
+		std::vector<std::vector<int>> vertexIndices;
+
+		// LOAD DATA RELATED METHODS
+		Mesh() {}
+};
+
+
+
 HalfEdge* most_clockwise(HalfEdge* edge);
 HalfEdge* most_counter_clockwise(HalfEdge* edge);
-void makeFace(MeshFace &meshFace, std::vector<Vertex> &vertices, std::vector<HalfEdge> &halfEdges, std::vector<Face> &faces);
-void constructMesh( std::vector<Vertex> &inputVertices, std::vector<MeshFace> &inputFaces, std::vector<HalfEdge> &halfEdges, std::vector<Face> &faces);
+
+void makeFace(Mesh *mesh, std::vector<Vertex*> &fVertices);
+void constructMesh(Mesh* mesh, std::vector<Vector3f> &faceVertices);
 
 #endif

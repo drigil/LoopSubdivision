@@ -1,6 +1,6 @@
 #include "loadObj.h"
 
-bool loadFile(const std::string& filename, std::vector<Vertex> &vertices, std::vector<MeshFace> &faces) {
+bool loadFile(const std::string& filename, Mesh *mesh) {
 	// peek at the extension
 	std::string::size_type idx;
 	idx = filename.rfind('.');
@@ -8,7 +8,7 @@ bool loadFile(const std::string& filename, std::vector<Vertex> &vertices, std::v
 	if (idx != std::string::npos) {
 		std::string extension = filename.substr(idx + 1);
 		if (extension == "obj") {
-			return loadObj(filename, vertices, faces);
+			return loadObj(filename, mesh);
 		}
 		else {
 			std::cerr << "ERROR: unable to load file " << filename
@@ -20,7 +20,7 @@ bool loadFile(const std::string& filename, std::vector<Vertex> &vertices, std::v
 	return false;
 }
 
-bool loadObj(const std::string& filename, std::vector<Vertex> &vertices, std::vector<MeshFace> &faces) {
+bool loadObj(const std::string& filename, Mesh *mesh) {
 	std::ifstream ifs(filename.c_str());
 
 	if (ifs.is_open()) {
@@ -34,10 +34,9 @@ bool loadObj(const std::string& filename, std::vector<Vertex> &vertices, std::ve
 			// Load Vertices
 			if (line[0] == 'v') { // vertices
 				sscanf(line.c_str(), "%s %f %f %f", temp, &v0, &v1, &v2);
-				// printf("Vertex - %s %f %f %f \n", temp, v0, v1, v2);
 
-				Vertex v(Vector3f(v0, v1, v2));
-				vertices.push_back(v);
+				Vertex *v = new Vertex(Vector3f(v0, v1, v2));
+				mesh->vertices.push_back(v);
 
 				// Vector3f vector(v0, v1, v2);
 				// temp_vertices.push_back(vector);
@@ -51,10 +50,13 @@ bool loadObj(const std::string& filename, std::vector<Vertex> &vertices, std::ve
 			else if (line[0] == 'f') {
 
 				sscanf(line.c_str(), "%s %d %d %d", temp, &f0, &f1, &f2);
-				// printf("Face %s %d %d %d \n", temp, f0, f1, f2);
 
-				MeshFace f(Vector3d(f0, f1, f2));
-				faces.push_back(f);
+				std::vector<int> indices;
+				indices.push_back(f0);
+				indices.push_back(f1);
+				indices.push_back(f2);
+				
+				mesh->vertexIndices.push_back(indices);
 
 				// std::vector<int> face;
 				// face.push_back(t0[0] - 1);

@@ -5,7 +5,38 @@
 #include "halfEdge.h"
 #include "loop.h"
 
-int width = 640, height=640;
+#define NUM_LOOPS 1
+
+int width = 640, height=640; // Window dimensions
+
+std::vector<Mesh*> meshArray; // Keep track of all meshes
+std::vector<Vector3f> faceVertices; // Keep track of vertices per face to draw the mesh using opengl
+int currMeshIndex = 0; // Keeps track of the index of the current mesh
+
+// Fill face vertices to draw the mesh
+void constructFaceVertices(int meshIndex){
+    faceVertices.clear();
+    for(int i = 0; i<meshArray[meshIndex]->faces.size(); i++){
+        HalfEdge *halfEdge = meshArray[meshIndex]->faces[i]->edge;
+        do{
+            faceVertices.push_back(halfEdge->start->pos);
+            halfEdge = halfEdge->next;
+        }
+        while(halfEdge!=meshArray[meshIndex]->faces[i]->edge);
+    }
+}
+
+void loopSubdivide(){
+    Mesh* mesh = new Mesh();
+    meshArray.push_back(mesh);
+    currMeshIndex++;
+
+    computedOddPoints(meshArray[currMeshIndex], meshArray[currMeshIndex - 1]);
+    computeEvenPoints(meshArray[currMeshIndex], meshArray[currMeshIndex - 1]);
+    computeNewMesh(meshArray[currMeshIndex], meshArray[currMeshIndex - 1]);
+
+    constructFaceVertices(currMeshIndex);
+}
 
 int main(int, char**)
 {	
@@ -35,51 +66,55 @@ int main(int, char**)
         std::cout << "vVertex found at location " << vVertex_attrib << std::endl;
     }
 
-	std::vector<Vertex> vertices;
-	std::vector<MeshFace> meshFaces;
-    std::vector<HalfEdge> halfEdges;
-    std::vector<Face> faces;
-
-
-    bool isFileOpen = loadFile("./models/triangle.obj", vertices, meshFaces);
+	Mesh *mesh = new Mesh();
+    bool isFileOpen = loadFile("./models/square.obj", mesh); // triangle, square
 
     if(isFileOpen == false){
     	return -1; // Invalid File
     }
 
     // Vertices obtained from the file
-    for(Vertex v: vertices){
-    	printf("Vertex %f %f %f \n", v.pos.x, v.pos.y, v.pos.z);
-    }
+    // for(Vertex *v: mesh->vertices){
+    // 	printf("Vertex %f %f %f \n", v->pos.x, v->pos.y, v->pos.z);
+    // }
 
     // Mesh Faces obtained from the file
-    for(MeshFace f:meshFaces){
-    	printf("Face %d %d %d \n", f.indices.x, f.indices.y, f.indices.z);
-    }
+    // for(std::vector<int> face: mesh->vertexIndices){
+    // 	printf("Face %d %d %d \n", face[0], face[1], face[2]);
+    // }
+
+    // Push current mesh into the array
+    meshArray.push_back(mesh);
 
     // Convert the mesh to half edge data structure
-    constructMesh(vertices, meshFaces, halfEdges, faces);
+    constructMesh(mesh, faceVertices);
 
-    for(HalfEdge halfEdge: halfEdges){
-        printf("Half Edge start vertex %f %f %f\n", halfEdge.start->pos.x, halfEdge.start->pos.y, halfEdge.start->pos.z);
-    }
+    // for(HalfEdge *halfEdge: mesh->halfEdges){
+    //     printf("Half Edge start vertex %f %f %f\n", halfEdge->start->pos.x, halfEdge->start->pos.y, halfEdge->start->pos.z);
+    //     printf("Half Edge next start vertex %f %f %f\n", halfEdge->next->start->pos.x, halfEdge->next->start->pos.y, halfEdge->next->start->pos.z);
+    // }
 
-    for(Face face: faces){
-        printf("Face Edge start vertex %f %f %f\n", face.edge->start->pos.x, face.edge->start->pos.y, face.edge->start->pos.z);
+    // for(Face *face: mesh->faces){
+    //     printf("Face Edge start vertex %f %f %f\n", face->edge->start->pos.x, face->edge->start->pos.y, face->edge->start->pos.z);
+    // }
+
+    for(int i = 0; i<NUM_LOOPS; i++){
+        loopSubdivide();    
     }
+    
 
     // Construct 1D vertex array to display
-    int numVertices = meshFaces.size() * 3 * 3; // 3 vertices per face, 3 coordinates per vertex
+    int numVertices = faceVertices.size() * 3; // 3 coordinates per vertex
     GLfloat glVertices[numVertices];
 
     int counter = 0;
-    for(int i = 0; i<meshFaces.size(); i++){
-        for(int j = 0; j<3; j++){
-            glVertices[counter] = vertices[meshFaces[i].indices.getCoord(j)].pos.x;
-            glVertices[counter + 1] = vertices[meshFaces[i].indices.getCoord(j)].pos.y;
-            glVertices[counter + 2] = vertices[meshFaces[i].indices.getCoord(j)].pos.z;
-            counter = counter + 3;
-        }
+    for(int i = 0; i<faceVertices.size(); i++){
+        
+        glVertices[counter] = faceVertices[i].x;
+        glVertices[counter + 1] = faceVertices[i].y;
+        glVertices[counter + 2] = faceVertices[i].z;
+        counter = counter + 3;
+    
     }
 
     glUseProgram(shaderProgram);
@@ -130,7 +165,8 @@ int main(int, char**)
 
         glBindVertexArray(obj_VAO); 
 
-        glDrawArrays(GL_TRIANGLES, 0, numVertices);//else tri_points   
+        // glDrawArrays(GL_POINTS, 0, numVertices);//else tri_points   GL_TRIANGLES
+        glDrawArrays(GL_TRIANGLES, 0, numVertices);//else tri_points   GL_TRIANGLES
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
