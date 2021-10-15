@@ -5,7 +5,7 @@
 #include "halfEdge.h"
 #include "loop.h"
 
-#define NUM_LOOPS 1
+#define NUM_LOOPS 3
 
 int width = 640, height=640; // Window dimensions
 
@@ -67,7 +67,7 @@ int main(int, char**)
     }
 
 	Mesh *mesh = new Mesh();
-    bool isFileOpen = loadFile("./models/square.obj", mesh); // triangle, square
+    bool isFileOpen = loadFile("./models/triangle.obj", mesh); // primitive_triangle, triangle, concentric_triangle, square, sample2
 
     if(isFileOpen == false){
     	return -1; // Invalid File
@@ -76,6 +76,7 @@ int main(int, char**)
     // Vertices obtained from the file
     // for(Vertex *v: mesh->vertices){
     // 	printf("Vertex %f %f %f \n", v->pos.x, v->pos.y, v->pos.z);
+    //     printf("Constraint %d\n", v->isConstrained);
     // }
 
     // Mesh Faces obtained from the file
@@ -114,7 +115,6 @@ int main(int, char**)
         glVertices[counter + 1] = faceVertices[i].y;
         glVertices[counter + 2] = faceVertices[i].z;
         counter = counter + 3;
-    
     }
 
     glUseProgram(shaderProgram);
@@ -165,7 +165,7 @@ int main(int, char**)
 
         glBindVertexArray(obj_VAO); 
 
-        // glDrawArrays(GL_POINTS, 0, numVertices);//else tri_points   GL_TRIANGLES
+        glDrawArrays(GL_POINTS, 0, numVertices);//else tri_points   GL_TRIANGLES
         glDrawArrays(GL_TRIANGLES, 0, numVertices);//else tri_points   GL_TRIANGLES
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

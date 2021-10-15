@@ -26,6 +26,7 @@ bool loadObj(const std::string& filename, Mesh *mesh) {
 	if (ifs.is_open()) {
 		int f0, f1, f2;
 		float v0, v1, v2;
+		int c0;
 		std::string line;
 		char temp[200];
 
@@ -38,11 +39,7 @@ bool loadObj(const std::string& filename, Mesh *mesh) {
 				Vertex *v = new Vertex(Vector3f(v0, v1, v2));
 				mesh->vertices.push_back(v);
 
-				// Vector3f vector(v0, v1, v2);
-				// temp_vertices.push_back(vector);
-				// Vertex *v = new Vertex(vector);
-				// v->crease = 0;
-				// glvertices.push_back(v);
+				v->crease = 0;
 
 			}
 			
@@ -58,17 +55,14 @@ bool loadObj(const std::string& filename, Mesh *mesh) {
 				
 				mesh->vertexIndices.push_back(indices);
 
-				// std::vector<int> face;
-				// face.push_back(t0[0] - 1);
-				// face.push_back(t1[0] - 1);
-				// face.push_back(t2[0] - 1);
+			}
 
+			//Add constraints
+			else if (line[0] == 'c') {
 
-				// if (t3[0] != -1) {
-				// 	quad = true;
-				// 	face.push_back(t3[0] - 1);
-				// }
-				// vertex_indices.push_back(face);
+				sscanf(line.c_str(), "%s %d", temp, &c0);
+
+				mesh->vertices[c0]->isConstrained = true;
 
 			}
 		}

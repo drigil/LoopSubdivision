@@ -109,15 +109,13 @@ struct MeshFace{
 
 struct Vertex {
 	Vector3f pos;
-	Vector3f color;
-	Vector3f normal;
-	Vector3f texture;
 	HalfEdge *edge;
+	bool crease; // To check boundary
+	bool isConstrained; // To constrain edges
 	
-	Vertex() { edge = NULL; }
-	Vertex(Vector3f p) { edge = NULL; pos = p; }
-	Vertex(Vertex &v) { this->pos = v.pos; }
-	Vertex(Vertex const &v) { this->pos = v.pos; this->edge = v.edge; }
+	Vertex() { edge = NULL; crease = 0; isConstrained = 0;}
+	Vertex(Vector3f p) { edge = NULL; pos = p; crease = 0; isConstrained = 0;}
+	Vertex(Vertex const &v) { this->pos = v.pos; this->edge = v.edge; this->crease = v.crease; this->isConstrained = v.isConstrained;}
 	Vertex *newPoint; // future newPoint
 };
 
