@@ -165,7 +165,7 @@ int main(int, char**)
 
         glBindVertexArray(obj_VAO); 
 
-        glDrawArrays(GL_POINTS, 0, numVertices);//else tri_points   GL_TRIANGLES
+        // glDrawArrays(GL_POINTS, 0, numVertices);//else tri_points   GL_TRIANGLES
         glDrawArrays(GL_TRIANGLES, 0, numVertices);//else tri_points   GL_TRIANGLES
 
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
