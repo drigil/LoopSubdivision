@@ -5,7 +5,7 @@
 #include "halfEdge.h"
 #include "loop.h"
 
-#define NUM_LOOPS 3
+#define NUM_LOOPS 2
 
 int width = 640, height=640; // Window dimensions
 
@@ -67,7 +67,7 @@ int main(int, char**)
     }
 
 	Mesh *mesh = new Mesh();
-    bool isFileOpen = loadFile("./models/triangle.obj", mesh); // primitive_triangle, triangle, concentric_triangle, square, sample2
+    bool isFileOpen = loadFile("./models/triangle.obj", mesh); // primitive_triangle, triangle, scission_triangle, square, sample2
 
     if(isFileOpen == false){
     	return -1; // Invalid File
